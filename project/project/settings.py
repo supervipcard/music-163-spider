@@ -22,15 +22,15 @@ USER_AGENT = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML
 ROBOTSTXT_OBEY = False
 
 
-DOWNLOAD_TIMEOUT = 10
+DOWNLOAD_TIMEOUT = 15
 RETRY_TIMES = 5
 
 # LOG_FILE = 'log'
-# LOG_LEVEL = 'INFO'
+LOG_LEVEL = 'INFO'
 
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-CONCURRENT_REQUESTS = 8
+CONCURRENT_REQUESTS = 4
 
 # Configure a delay for requests for the same website (default: 0)
 # See https://doc.scrapy.org/en/latest/topics/settings.html#download-delay
@@ -120,24 +120,25 @@ DEPTH_PRIORITY = -1    # 深度优先
 SCHEDULER_PERSIST = True    # 是否在关闭时保留原来的调度器和去重记录
 SCHEDULER_FLUSH_ON_START = False    # 是否在开始之前清空调度器和去重记录
 
-REDIS_HOST = '101.132.71.2'
+REDIS_HOST = 'localhost'
 REDIS_PORT = 6379
 REDIS_PARAMS = {
-    'password': '',
+    'password': 'pl1996317',
 }
 REDIS_PROXY_KEY = 'proxy'
+IP_BLACKLIST_KEY = 'blacklist'
 
-MYSQL_HOST = '101.132.71.2'
+MYSQL_HOST = 'localhost'
 MYSQL_PORT = 3306
-MYSQL_USER = ''
-MYSQL_PASSWD = ''
+MYSQL_USER = 'xiangchen'
+MYSQL_PASSWD = 'Pl1996317'
 MYSQL_DB = 'test'
 
 MAIL_FROM = '805071841@qq.com'
 MAIL_HOST = 'smtp.qq.com'
 MAIL_PORT = 465
 MAIL_USER = '805071841@qq.com'
-MAIL_PASS = ''
+MAIL_PASS = 'nwqihodadverbedf'
 MAIL_TO = ['805071841@qq.com']
 MAIL_TLS = True
 MAIL_SSL = True

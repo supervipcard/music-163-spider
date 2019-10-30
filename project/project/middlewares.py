@@ -7,10 +7,15 @@
 
 from scrapy.downloadermiddlewares.retry import RetryMiddleware
 from scrapy.utils.response import response_status_message
+from scrapy.utils.python import global_object_name
 from scrapy.exceptions import IgnoreRequest
 from scrapy import signals
 import random
+import logging
 import json
+import time
+
+logger = logging.getLogger(__name__)
 
 
 class CodeError(IgnoreRequest):
@@ -29,19 +34,25 @@ class ProxyMiddleware(object):
         return cls(key)
 
     def process_request(self, request, spider):
-        keys = spider.server.keys('%s*' % self.key)    # redis连接
-        if keys:
-            proxy_channel = random.choice(keys).decode('utf-8')
-            proxy = spider.server.get(proxy_channel)
-            if proxy:
-                request.meta['proxy_channel'] = proxy_channel
-                request.meta['proxy'] = 'https://' + proxy.decode('utf-8')
+        count = 0
+        while True:
+            keys = spider.server.keys('%s*' % self.key)    # redis连接
+            if keys:
+                proxy_channel = random.choice(keys).decode('utf-8')
+                proxy = spider.server.get(proxy_channel)
+                if proxy:
+                    request.meta['proxy_channel'] = proxy_channel
+                    request.meta['proxy'] = 'https://' + proxy.decode('utf-8')
+                    break
+            count += 1
+            logger.warning("Waiting %(request)s (%(count)d times): Proxy Absence", {'request': request, 'count': count})
+            time.sleep(3)
 
 
 class MyRetryMiddleware(RetryMiddleware):
     def __init__(self, settings):
         super(MyRetryMiddleware, self).__init__(settings)
-        self.key = settings.get('REDIS_PROXY_KEY')
+        self.ip_blacklist_key = settings.get('IP_BLACKLIST_KEY')
 
     def process_response(self, request, response, spider):
         if request.meta.get('dont_retry', False):
@@ -52,10 +63,41 @@ class MyRetryMiddleware(RetryMiddleware):
         elif request.callback.__name__ in ['api_album', 'api_song_url', 'api_song_lyric', 'song_parse'] and json.loads(response.text).get('code') != 200:
             proxy_channel = request.meta.get('proxy_channel')
             if proxy_channel:
+                spider.server.sadd(self.ip_blacklist_key, request.meta.get('proxy').replace('https://', ''))
                 spider.server.delete(proxy_channel)
             reason = 'code {}'.format(json.loads(response.text).get('code'))
             return self._retry(request, reason, spider) or response
         return response
+
+    def _retry(self, request, reason, spider):
+        retries = request.meta.get('retry_times', 0) + 1
+
+        retry_times = self.max_retry_times
+
+        if 'max_retry_times' in request.meta:
+            retry_times = request.meta['max_retry_times']
+
+        stats = spider.crawler.stats
+        if retries <= retry_times:
+            logger.warning("Retrying %(request)s (failed %(retries)d times): %(reason)s",
+                         {'request': request, 'retries': retries, 'reason': reason},
+                         extra={'spider': spider})
+            retryreq = request.copy()
+            retryreq.meta['retry_times'] = retries
+            retryreq.dont_filter = True
+            retryreq.priority = request.priority + self.priority_adjust
+
+            if isinstance(reason, Exception):
+                reason = global_object_name(reason.__class__)
+
+            stats.inc_value('retry/count')
+            stats.inc_value('retry/reason_count/%s' % reason)
+            return retryreq
+        else:
+            stats.inc_value('retry/max_reached')
+            logger.warning("Gave up retrying %(request)s (failed %(retries)d times): %(reason)s",
+                         {'request': request, 'retries': retries, 'reason': reason},
+                         extra={'spider': spider})
 
 
 class CodeErrorMiddleware(object):
