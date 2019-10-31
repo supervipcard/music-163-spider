@@ -25,17 +25,17 @@ ROBOTSTXT_OBEY = False
 DOWNLOAD_TIMEOUT = 15
 RETRY_TIMES = 5
 
-# LOG_FILE = 'log'
+LOG_FILE = 'log'
 LOG_LEVEL = 'INFO'
-
+LOG_STDOUT = True
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-CONCURRENT_REQUESTS = 4
+CONCURRENT_REQUESTS = 1
 
 # Configure a delay for requests for the same website (default: 0)
 # See https://doc.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-# DOWNLOAD_DELAY = 1
+DOWNLOAD_DELAY = 1
 # The download delay setting will honor only one of:
 #CONCURRENT_REQUESTS_PER_DOMAIN = 16
 #CONCURRENT_REQUESTS_PER_IP = 16
@@ -61,7 +61,7 @@ SPIDER_MIDDLEWARES = {
 # Enable or disable downloader middlewares
 # See https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
-    'project.middlewares.ProxyMiddleware': 300,
+    'project.middlewares.ABYProxyMiddleware': 300,
     'scrapy.downloadermiddlewares.retry.RetryMiddleware': None,
     'project.middlewares.MyRetryMiddleware': 550,
 }
@@ -76,7 +76,7 @@ EXTENSIONS = {
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'project.pipelines.SqlPipeline': 300,
+    # 'project.pipelines.SqlPipeline': 300,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -115,6 +115,10 @@ DUPEFILTER_DEBUG = True
 
 SCHEDULER = "scrapy_redis.scheduler.Scheduler"
 SCHEDULER_QUEUE_CLASS = 'scrapy_redis.queue.PriorityQueue'
+
+SCHEDULER_QUEUE_KEY = 'song:requests'
+SCHEDULER_DUPEFILTER_KEY = 'song:dupefilter'
+
 DEPTH_PRIORITY = -1    # 深度优先
 
 SCHEDULER_PERSIST = True    # 是否在关闭时保留原来的调度器和去重记录
@@ -124,6 +128,7 @@ REDIS_HOST = 'localhost'
 REDIS_PORT = 6379
 REDIS_PARAMS = {
     'password': 'pl1996317',
+    'db': 5
 }
 REDIS_PROXY_KEY = 'proxy'
 IP_BLACKLIST_KEY = 'blacklist'
@@ -145,3 +150,6 @@ MAIL_SSL = True
 
 BLOOMFILTER_BIT = 30
 BLOOMFILTER_HASH_NUMBER = 6
+
+PROXY_USER = 'H889BT3GSSBG3U6D'
+PROXY_PASS = 'C4E4EA69296C97B8'

@@ -14,6 +14,7 @@ import random
 import logging
 import json
 import time
+import base64
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +25,22 @@ class CodeError(IgnoreRequest):
         super(CodeError, self).__init__(*args, **kwargs)
 
 
-class ProxyMiddleware(object):
+class ABYProxyMiddleware(object):
+    def __init__(self, proxyUser, proxyPass):
+        self.proxyAuth = "Basic " + base64.urlsafe_b64encode(bytes((proxyUser + ":" + proxyPass), "ascii")).decode("utf8")
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        proxyUser = crawler.settings.get('PROXY_USER')
+        proxyPass = crawler.settings.get('PROXY_PASS')
+        return cls(proxyUser, proxyPass)
+
+    def process_request(self, request, spider):
+        request.meta['proxy'] = "http://http-dyn.abuyun.com:9020"
+        request.headers.setdefault('Proxy-Authorization', self.proxyAuth)
+
+
+class ADSLProxyMiddleware(object):
     def __init__(self, key):
         self.key = key
 

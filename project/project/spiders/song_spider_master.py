@@ -8,17 +8,17 @@ from scrapy.utils.project import get_project_settings
 from scrapy.spidermiddlewares.httperror import HttpError
 from twisted.internet.error import DNSLookupError
 from twisted.internet.error import TimeoutError, TCPTimedOutError
-from project.middlewares import CodeError
-from project.items import ProjectItem
+from ..middlewares import CodeError
+from ..items import ProjectItem
 
 
-class SongSpider(spiders.RedisSpider):
-    name = 'song'
+class SongSpiderMaster(spiders.RedisSpider):
+    name = 'song_master'
     # allowed_domains = ['music.163.com']
-    redis_key = 'song:requests'
+    # redis_key = 'song:start_urls'
 
     def __init__(self, *args, **kwargs):
-        super(SongSpider, self).__init__(*args, **kwargs)
+        super(SongSpiderMaster, self).__init__(*args, **kwargs)
         settings = get_project_settings()
         self.mail_to = settings.get('MAIL_TO', ['805071841@qq.com'])
         self.mailer = MailSender.from_settings(settings)
