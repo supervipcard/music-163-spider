@@ -76,7 +76,7 @@ EXTENSIONS = {
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    # 'project.pipelines.SqlPipeline': 300,
+    'project.pipelines.SqlPipeline': 300,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
