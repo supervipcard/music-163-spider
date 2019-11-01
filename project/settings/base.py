@@ -76,7 +76,7 @@ EXTENSIONS = {
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'project.pipelines.SqlPipeline': 300,
+    # 'project.pipelines.SqlPipeline': 300,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -127,7 +127,7 @@ SCHEDULER_FLUSH_ON_START = False    # 是否在开始之前清空调度器和去
 REDIS_HOST = 'localhost'
 REDIS_PORT = 6379
 REDIS_PARAMS = {
-    'password': 'pl1996317',
+    'password': '',
     'db': 5
 }
 REDIS_PROXY_KEY = 'proxy'
@@ -135,15 +135,15 @@ IP_BLACKLIST_KEY = 'blacklist'
 
 MYSQL_HOST = 'localhost'
 MYSQL_PORT = 3306
-MYSQL_USER = 'xiangchen'
-MYSQL_PASSWD = 'Pl1996317'
+MYSQL_USER = ''
+MYSQL_PASSWD = ''
 MYSQL_DB = 'test'
 
 MAIL_FROM = '805071841@qq.com'
 MAIL_HOST = 'smtp.qq.com'
 MAIL_PORT = 465
 MAIL_USER = '805071841@qq.com'
-MAIL_PASS = 'nwqihodadverbedf'
+MAIL_PASS = ''
 MAIL_TO = ['805071841@qq.com']
 MAIL_TLS = True
 MAIL_SSL = True
@@ -151,5 +151,5 @@ MAIL_SSL = True
 BLOOMFILTER_BIT = 30
 BLOOMFILTER_HASH_NUMBER = 6
 
-PROXY_USER = 'H889BT3GSSBG3U6D'
-PROXY_PASS = 'C4E4EA69296C97B8'
+PROXY_USER = ''
+PROXY_PASS = ''
